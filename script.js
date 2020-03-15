@@ -9,11 +9,23 @@ function drawRect(x, y, w, h, color){
 }
 var a = 0
 function drawUser(x,y,b){
-    a = a+b
+    user.angleOld = user.angleOld+b
     var context = canvas.getContext("2d");
     context.save()
     context.translate(x,y)
-    context.rotate(a);
+    context.rotate(user.angleOld);
+    if(user.laser === "on"){
+        context.moveTo(0, 0);
+        context.moveTo(15,-26);
+        context.lineTo(15,-1000);
+        context.lineWidth = 5;
+        context.strokeStyle = "#0000FF";
+        context.stroke();
+        if(Math.abs(ball.y - ball.radius)>7.5){
+            ball.color === "red"
+        }
+        console.log(user.x)
+    }
     context.beginPath();
     context.fillStyle = "#FFCC00";
     let height = 30 * Math.cos(Math.PI / 6);
@@ -22,14 +34,15 @@ function drawUser(x,y,b){
     context.lineTo(0+15, 0 - height);
     context.closePath();
     context.fill();
+    
     context.restore();
-    user.x += 0.5 * Math.cos(a - Math.PI/2);
-    user.y += 0.5 * Math.sin(a - Math.PI/2);
+    
+    user.x += 0.5 * Math.cos(user.angleOld - Math.PI/2);
+    user.y += 0.5 * Math.sin(user.angleOld - Math.PI/2);
 }
 
 function drawCircle(x, y, r, color){
     context.fillStyle = color;
-    context.fillStyle = "#FFCC00";
     context.beginPath();
     context.arc(x, y, r, 0, Math.PI*2, false);
     context.closePath();
@@ -45,44 +58,37 @@ const user = {
     y : canvas.height/2,
     width : 15,
     color : "White",
-    angle : 0,
-}
-const net = {
-    x : canvas.width/2 - 2/2,
-    y : 0,
-    width : 3,
-    height : 15,
-    color : "White",
+    angleOld : 0,
+    angleNew : 0,
+    laser : "off",
 }
 const ball = {
-    x : 15,
-    y : 15,
+    x : canvas.height/2,
+    y : canvas.height/2,
     radius : 15,
     speed : 7,
     color : "White",
-    angle : 0,
+    angleOld : 0,
+    angleNew : 0,
 }
 function update(){
    if(user.y < -10){
        user.y = canvas.height
-       console.log("a")
    }
    else if(user.y > canvas.height + 10){
        user.y = 0
-       console.log("b")
    }
    else if(user.x > canvas.width + 10){
        user.x = 0
-       console.log("c")
    }
    else if(user.x < -10){
        user.x = canvas.width
-       console.log("daa")
    }
 }
 function render(){
 drawRect(0, 0, canvas.width, canvas.height, "black");
-drawUser(user.x, user.y,user.angle)
+drawCircle(ball.x, ball.y, ball.radius, ball.color);
+drawUser(user.x, user.y,user.angleNew)
 }
 function game(){
     render();
@@ -94,12 +100,19 @@ document.addEventListener('keyup', keyUp)
 function keyPressed(e){
     key = e.key
     if (key == "a") {
-        user.angle = -0.008;
+        user.angleNew = -0.008;
     }
     else if(key == "d"){
-    user.angle = 0.008
+    user.angleNew = 0.008
     }
+    else if(key == " ") {
+    e.preventDefault();
+        if(user.angleNew === 0){ 
+            user.laser = "on";
+        }
+  }
 }
 function keyUp(){
-    user.angle = 0;
+    user.angleNew = 0;
+    user.laser = "off"
 }
