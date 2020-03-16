@@ -16,6 +16,7 @@ const shot = {
     angleOld : "",
     color:"",
     exists : false,
+    ready : true,
 }
 //draw functions 
 function drawRect(x, y, w, h, color){
@@ -43,7 +44,7 @@ function drawUser(x,y,b){
     context.closePath();
     context.fill();
     context.lineWidth = 2;
-    context.strokeStyle = (shot.exists === true) ? "white" : shot.color;
+    context.strokeStyle = (shot.exists === true || user.angleNew !== 0) ? "white" : shot.color;
     context.stroke();
     context.restore();
     user.x += 0.5 * Math.cos(user.angleOld - Math.PI/2);
@@ -107,21 +108,24 @@ function keyPressed(e){
     key = e.key
     if (key == "a") {
         user.angleNew = -0.008;
+        user.turning = true;
     }
     else if(key == "d"){
-    user.angleNew = 0.008
+        user.angleNew = 0.008
+        user.turning = true;
     }
     else if(key == " ") {
     e.preventDefault();
-        if(shot.exists === false){
+    user.angleNew = 0
+        if(shot.exists === false && user.angleNew === 0){
             shot.angleOld = user.angleOld
             shot.x = user.x
             shot.y = user.y
             shot.exists = true;
+            shot.ready = false;
         }
   }
 }
 function keyUp(){
     user.angleNew = 0;
-    user.laser = "off"
 }
