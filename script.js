@@ -8,7 +8,6 @@ const user = {
     color : "White",
     angleOld : 0,
     angleNew : 0,
-    laser : "off",
 }
 const shot = {
     x : "",
@@ -18,15 +17,26 @@ const shot = {
     exists : false,
     ready : true,
 }
+const comp = {
+    x : canvas.height/2+30,
+    y : canvas.height/2+30,
+    width : 15,
+    color : "White",
+    angleOld : 1,
+    angleNew : 0,
+    laser : "off",
+}
 //draw functions 
 function drawRect(x, y, w, h, color){
     context.fillStyle = color;
     context.fillRect(x, y, w, h);
 }
 var shotI = 1;
+var colorI = 0;
 function chooseColor(){
-       let color = (shotI % 300 < 100) ? "blue" : (shotI % 300 > 200) ? "yellow" : "red"
+       let color = (colorI % 300 < 100) ? "blue" : (colorI % 300 > 200) ? "yellow" : "red"
        shot.color = color
+       colorI++
 }
 var a = 0
 function drawUser(x,y,b){
@@ -49,6 +59,7 @@ function drawUser(x,y,b){
     context.restore();
     user.x += 0.5 * Math.cos(user.angleOld - Math.PI/2);
     user.y += 0.5 * Math.sin(user.angleOld - Math.PI/2);
+    drawComp()
 }
 
 function drawCircle(x, y, r, color){
@@ -57,6 +68,27 @@ function drawCircle(x, y, r, color){
     context.arc(x, y, r, 0, Math.PI*2, false);
     context.closePath();
     context.fill();
+}
+function drawComp(){
+    comp.angleOld = user.angleOld+comp.angleNew
+    var context = canvas.getContext("2d");
+    context.save()
+    context.translate(comp.x,comp.y)
+    context.rotate(comp.angleOld+ (2*Math.PI/3));
+    context.beginPath();
+    context.fillStyle = "#000000";
+    let height = 30 * Math.cos(Math.PI / 6);
+    context.moveTo(0, 0);
+    context.lineTo(0+30, 0);
+    context.lineTo(0+15, 0 - height);
+    context.closePath();
+    context.fill();
+    context.lineWidth = 1.5;
+    context.strokeStyle = "#FFFFFF"
+    context.stroke();
+    context.restore();
+    comp.x += 0.5 * Math.cos(comp.angleOld - Math.PI/2);
+    comp.y += 0.5 * Math.sin(comp.angleOld - Math.PI/2);
 }
 function drawShot(){
     if(shotI%501 === 0){
@@ -115,6 +147,7 @@ drawRect(200, 200, 100, 100, "white");
 // drawCircle(shot.x, shot.y, shot.radius, shot.color);
 drawShot(shot.color);
 drawUser(user.x, user.y,user.angleNew)
+
 chooseColor()
 }
 function game(){
