@@ -1,0 +1,13 @@
+#crtScanLines{
+    z-index: 100;
+    position: fixed;
+  top: 8;
+  left: 8;
+  height: 500px;
+  width: 500px;
+  overflow: hidden;
+  opacity: 40%;
+}
+/* #table{
+
+} */

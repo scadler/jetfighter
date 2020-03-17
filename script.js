@@ -23,9 +23,9 @@ function drawRect(x, y, w, h, color){
     context.fillStyle = color;
     context.fillRect(x, y, w, h);
 }
-var colorI = 0
+var shotI = 1;
 function chooseColor(){
-       let color = (colorI % 300 < 100) ? "blue" : (colorI % 300 > 200) ? "yellow" : "red"
+       let color = (shotI % 300 < 100) ? "blue" : (shotI % 300 > 200) ? "yellow" : "red"
        shot.color = color
 }
 var a = 0
@@ -36,14 +36,14 @@ function drawUser(x,y,b){
     context.translate(x,y)
     context.rotate(user.angleOld+ (2*Math.PI/3));
     context.beginPath();
-    context.fillStyle = "#FFFFFF";
+    context.fillStyle = "#000000";
     let height = 30 * Math.cos(Math.PI / 6);
     context.moveTo(0, 0);
     context.lineTo(0+30, 0);
     context.lineTo(0+15, 0 - height);
     context.closePath();
     context.fill();
-    context.lineWidth = 2;
+    context.lineWidth = 1.5;
     context.strokeStyle = (shot.exists === true || user.angleNew !== 0) ? "white" : shot.color;
     context.stroke();
     context.restore();
@@ -58,18 +58,37 @@ function drawCircle(x, y, r, color){
     context.closePath();
     context.fill();
 }
-function drawShot(color){
+function drawShot(){
+    if(shotI%501 === 0){
+        shot.exists = false;
+        console.log("works")
+        shotI = 1
+    }
+    else if(shot.exists === true){
     shot.x += 1.5 * Math.cos(shot.angleOld - Math.PI/2);
     shot.y += 1.5 * Math.sin(shot.angleOld - Math.PI/2);
-    context.fillStyle = color
+    context.fillStyle = "#000000"
     context.beginPath();
     context.arc(shot.x, shot.y, 7, 0, Math.PI*2, false);
     context.closePath();
     context.fill();
-    colorI++
-    if(shot.x > canvas.width ||  shot.x < 0 || shot.y > canvas.height ||  shot.y < 0){
-        shot.exists = false;
+    context.lineWidth = 1.5;
+    context.strokeStyle = shot.color;
+    context.stroke();
+    shotI++
+    if(shot.x > canvas.width + 7){
+        shot.x = 0
     }
+    else if(shot.x < -7){
+        shot.x = canvas.width
+    }
+    else if(shot.y > canvas.height + 7){
+        shot.y = -7
+    }
+    else if(shot.y < -7){
+        shot.y = canvas.height
+    }
+}
 }
 function drawText(text,x, y, color){
     context.fillStyle = color;
@@ -92,6 +111,7 @@ function update(){
 }
 function render(){
 drawRect(0, 0, canvas.width, canvas.height, "black");
+drawRect(200, 200, 100, 100, "white");
 // drawCircle(shot.x, shot.y, shot.radius, shot.color);
 drawShot(shot.color);
 drawUser(user.x, user.y,user.angleNew)
@@ -112,7 +132,7 @@ function keyPressed(e){
     }
     else if(key == "d"){
         user.angleNew = 0.008
-        user.turning = true;
+        user.turnding = true;
     }
     else if(key == " ") {
     e.preventDefault();
@@ -122,7 +142,6 @@ function keyPressed(e){
             shot.x = user.x
             shot.y = user.y
             shot.exists = true;
-            shot.ready = false;
         }
   }
 }
