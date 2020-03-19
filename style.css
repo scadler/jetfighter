@@ -1,10 +1,25 @@
 #crtScanLines{
     z-index: 100;
-    position: fixed;
-  top: 8;
-  left: 8;
-  height: 600px;
-  width: 600px;
-  overflow: hidden;
-  opacity: 50%;
+    position: absolute;
+    top: 8;
+    left: 8;
+    height: 600px;
+    width: 600px;
+    overflow: hidden;
+    opacity: 50%;
+}
+#score{
+    position: absolute;
+    top: 8;
+    left: 8;
+    color:white;
+    font-family: 'VT323', monospace;
+    font-size: 32px;
+    float: left;
+}
+#scoreNumber{
+    font-family: 'Segment7Standard';
+    font-weight: normal;
+    font-size: 32px;
+    font-style: italic;
 }

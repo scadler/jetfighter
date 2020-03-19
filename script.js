@@ -41,10 +41,11 @@ function collision(){
         ball.angleOld = 2*Math.PI*Math.random()
         ball.speed = 0.5 + (Math.random()/2)
         ball.i = 1
+        $("#scoreNumber").text((Number($("#scoreNumber").text())+1))
     }
 }
 function chooseColor(){
-       let color = (colorI % 300 < 100) ? "blue" : (colorI % 300 > 200) ? "yellow" : "red"
+       let color = (colorI % 300 < 100) ? "#0028FB" : (colorI % 300 > 200) ? "#FFFD33" : "#FF3016"
        shot.color = color
        colorI++
 }
@@ -166,7 +167,7 @@ function update(){
    }
 }
 function render(){
-drawRect(0, 0, canvas.width, canvas.height, "#000000");
+drawRect(0, 0, canvas.width, canvas.height, "#000000'");
 drawShot(shot.color);
 drawUser(user.x, user.y,user.angleNew)
 drawBall(ball.x, ball.y, ball.radius,)
