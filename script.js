@@ -23,7 +23,8 @@ const ball = {
     radius : 20,
     color : "White",
     angleOld : 0,
-    speed : 0.5
+    speed : 0.5,
+    i : 0,
 }
 ball.angleOld = (Math.random()*Math.PI*2) % (2*Math.PI);
 //draw functions 
@@ -39,6 +40,7 @@ function collision(){
         ball.radius = (Math.random()+1) * 10
         ball.angleOld = 2*Math.PI*Math.random()
         ball.speed = 0.5 + (Math.random()/2)
+        ball.i = 1
     }
 }
 function chooseColor(){
@@ -57,14 +59,15 @@ function drawUser(x,y,b){
     context.fillStyle = "#000000";
     let height = 30 * Math.cos(Math.PI / 6);
     context.moveTo(0, 0);
-    context.lineTo(0+30, 0);
-    context.lineTo(0+15, 0 - height);
+    context.lineTo(30, 0);
+    context.lineTo(15, 0 - height/3)
+    context.lineTo(15, 0 - height);
+    
     context.closePath();
     context.fill();
     context.lineWidth = 1.5;
     context.strokeStyle = (shot.exists === true) ? "white": shot.color;
     context.stroke();
-
     context.restore();
     user.x += 0.5 * Math.cos(user.angleOld - Math.PI/2);
     user.y += 0.5 * Math.sin(user.angleOld - Math.PI/2);
@@ -82,14 +85,13 @@ function drawCircle(x, y, r){
     context.fill();
     context.stroke();
 }
-var ballI = 0
 function drawBall(x, y, r, color){
-    if(ballI % 2000 === 0){
+    if(ball.i % 2000 === 0){
         ball.angleOld = 2*Math.PI*Math.random()
         ball.speed = 0.5 + (Math.random()/2)
         ball.radius = (Math.random()+1) * 10
     }
-    ballI++
+    ball.i++
     context.fillStyle = "black";
     context.beginPath();
     context.arc(x, y, r, 0, Math.PI*2, false);
@@ -164,7 +166,7 @@ function update(){
    }
 }
 function render(){
-drawRect(0, 0, canvas.width, canvas.height, "black");
+drawRect(0, 0, canvas.width, canvas.height, "#000000");
 drawShot(shot.color);
 drawUser(user.x, user.y,user.angleNew)
 drawBall(ball.x, ball.y, ball.radius,)
