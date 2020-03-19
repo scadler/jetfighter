@@ -17,16 +17,15 @@ const shot = {
     exists : false,
     ready : true,
 }
-const comp = {
+const ball = {
     x : 100,
     y : 100,
-    width : 15,
+    radius : 20,
     color : "White",
     angleOld : 0,
-    angleNew : 0,
+    speed : 0.5
 }
-comp.angleOld = (Math.random()*Math.PI*2) % (2*Math.PI);
-console.log(comp.angleOld)
+ball.angleOld = (Math.random()*Math.PI*2) % (2*Math.PI);
 //draw functions 
 function drawRect(x, y, w, h, color){
     context.fillStyle = color;
@@ -34,6 +33,14 @@ function drawRect(x, y, w, h, color){
 }
 var shotI = 1;
 var colorI = 0;
+function collision(){
+    if((Math.abs(ball.x - shot.x) < ball.radius+7)&&(Math.abs(ball.y - shot.y) < ball.radius+7)&& shot.exists === true){
+        shot.exists = false
+        ball.radius = (Math.random()+1) * 10
+        ball.angleOld = 2*Math.PI*Math.random()
+        ball.speed = 0.5 + (Math.random()/2)
+    }
+}
 function chooseColor(){
        let color = (colorI % 300 < 100) ? "blue" : (colorI % 300 > 200) ? "yellow" : "red"
        shot.color = color
@@ -65,7 +72,7 @@ function drawUser(x,y,b){
     
 }
 
-function drawCircle(x, y, r, color){
+function drawCircle(x, y, r){
     context.fillStyle = "black";
     context.beginPath();
     context.arc(x, y, r, 0, Math.PI*2, false);
@@ -75,46 +82,28 @@ function drawCircle(x, y, r, color){
     context.fill();
     context.stroke();
 }
-var compI = 0
-function drawComp(x,y){
-    //need to get the angle that would allow the computer to point towards the white circle
-    diffX = Math.abs(user.x-comp.x)
-    diffY = Math.abs(user.y-comp.y) 
-    C = Math.sqrt(diffX*diffX + diffY*diffY)
-    predictedX = user.x + (C * 0.33 * Math.cos(user.angleOld - Math.PI/2));
-    predictedY = user.y + (C * 0.33 * Math.sin(user.angleOld - Math.PI/2));
-    // console.log(C +" c") 
-    
-    // var AB = Math.sqrt(Math.pow(comp.x-user.x,2)+ Math.pow(comp.y-user.y,2));    
-    // var BC = Math.sqrt(Math.pow(comp.x-predictedX,2)+ Math.pow(comp.y-predictedY,2)); 
-    // var AC = Math.sqrt(Math.pow(predictedX-user.x,2)+ Math.pow(predictedY-user.y,2));
-    // angle = Math.acos((BC*BC+AB*AB-AC*AC)/(2*BC*AB));
-    // comp.angleOld = angle
-    drawCircle(predictedX,predictedY,3,"white")
-    comp.angleOld = user.angleOld+(3*Math.PI/2)
-    var context = canvas.getContext("2d");
-    context.save()
-    context.translate(x,y)
-    context.rotate(comp.angleOld+ (2*Math.PI/3));
+var ballI = 0
+function drawBall(x, y, r, color){
+    if(ballI % 2000 === 0){
+        ball.angleOld = 2*Math.PI*Math.random()
+        ball.speed = 0.5 + (Math.random()/2)
+        ball.radius = (Math.random()+1) * 10
+    }
+    ballI++
+    context.fillStyle = "black";
     context.beginPath();
-    context.fillStyle = "#000000";
-    let height = 30 * Math.cos(Math.PI / 6);
-    context.moveTo(0, 0);
-    context.lineTo(0+30, 0);
-    context.lineTo(0+15, 0 - height);
+    context.arc(x, y, r, 0, Math.PI*2, false);
+    context.lineWidth = 1.5;
+    context.strokeStyle = "white";
     context.closePath();
     context.fill();
-    context.lineWidth = 1.5;
-    context.strokeStyle = "#ADD8E6"
     context.stroke();
-    context.restore();
-    comp.x += 0.5 * Math.cos(comp.angleOld - Math.PI/2);
-    comp.y += 0.5 * Math.sin(comp.angleOld - Math.PI/2);
+    ball.x += ball.speed * Math.cos(ball.angleOld - Math.PI/2);
+    ball.y += ball.speed * Math.sin(ball.angleOld - Math.PI/2);
 }
 function drawShot(){
     if(shotI%501 === 0){
         shot.exists = false;
-        console.log("works")
         shotI = 1
     }
     else if(shot.exists === true){
@@ -158,28 +147,28 @@ function update(){
    else if(user.x > canvas.width + 10){
        user.x = 0
    }
-   else if(user.x < -10){
+   else if(user.x < -15){
        user.x = canvas.width
    }
-   if(comp.y < -10){
-       comp.y = canvas.height
+   if(ball.y < -15){
+       ball.y = canvas.height
    }
-   else if(comp.y > canvas.height + 10){
-       comp.y = 0
+   else if(ball.y > canvas.height + 15){
+       ball.y = 0
    }
-   else if(comp.x > canvas.width + 10){
-       comp.x = 0
+   else if(ball.x > canvas.width + 15){
+       ball.x = 0
    }
-   else if(comp.x < -10){
-       comp.x = canvas.width
+   else if(ball.x < -10){
+       ball.x = canvas.width
    }
 }
 function render(){
 drawRect(0, 0, canvas.width, canvas.height, "black");
-drawCircle(comp.x, comp.y, comp.radius, comp.color);
 drawShot(shot.color);
 drawUser(user.x, user.y,user.angleNew)
-drawComp(comp.x, comp.y)
+drawBall(ball.x, ball.y, ball.radius,)
+collision()
 }
 function game(){
     render();
@@ -191,11 +180,11 @@ document.addEventListener('keyup', keyUp)
 function keyPressed(e){
     key = e.key
     if (key == "a") {
-        user.angleNew = -0.008;
+        user.angleNew = -0.01;
         user.turning = true;
     }
     else if(key == "d"){
-        user.angleNew = 0.008
+        user.angleNew = 0.01
         user.turnding = true;
     }
     else if(key == " ") {
