@@ -16,6 +16,8 @@ const shot = {
     color:"",
     exists : false,
     ready : true,
+    radius: 7,
+    i : 1,
 }
 const ball = {
     x : 100,
@@ -32,10 +34,9 @@ function drawRect(x, y, w, h, color){
     context.fillStyle = color;
     context.fillRect(x, y, w, h);
 }
-var shotI = 1;
 var colorI = 0;
 function collision(){
-    if((Math.abs(ball.x - shot.x) < ball.radius+7)&&(Math.abs(ball.y - shot.y) < ball.radius+7)&& shot.exists === true){
+    if((Math.abs(ball.x - shot.x) < ball.radius+shot.radius)&&(Math.abs(ball.y - shot.y) < ball.radius+shot.radius)&& shot.exists === true){
         shot.exists = false
         ball.radius = (Math.random()+1) * 10
         ball.angleOld = 2*Math.PI*Math.random()
@@ -55,6 +56,8 @@ function drawUser(x,y,b){
     var context = canvas.getContext("2d");
     context.save()
     context.translate(x,y)
+    let inX = ((ball.x+ball.raduis || ball.x - ball.radius) < 30) ? (((ball.x+ball.raduis || ball.x - ball.radius) > 0) ? true : false) : false
+    console.log(inX)
     context.rotate(user.angleOld+ (2*Math.PI/3));
     context.beginPath();
     context.fillStyle = "#000000";
@@ -63,7 +66,6 @@ function drawUser(x,y,b){
     context.lineTo(30, 0);
     context.lineTo(15, 0 - height/3)
     context.lineTo(15, 0 - height);
-    
     context.closePath();
     context.fill();
     context.lineWidth = 1.5;
@@ -105,22 +107,24 @@ function drawBall(x, y, r, color){
     ball.y += ball.speed * Math.sin(ball.angleOld - Math.PI/2);
 }
 function drawShot(){
-    if(shotI%501 === 0){
+    if(shot.i>450){shot.radius -= shot.i/5000}
+    if(shot.i%501 === 0){
         shot.exists = false;
-        shotI = 1
+        shot.i = 1
+        shot.radius = 7
     }
     else if(shot.exists === true){
     shot.x += 1.5 * Math.cos(shot.angleOld - Math.PI/2);
     shot.y += 1.5 * Math.sin(shot.angleOld - Math.PI/2);
     context.fillStyle = "#000000"
     context.beginPath();
-    context.arc(shot.x, shot.y, 7, 0, Math.PI*2, false);
+    context.arc(shot.x, shot.y, shot.radius, 0, Math.PI*2, false);
     context.closePath();
     context.fill();
     context.lineWidth = 1.5;
     context.strokeStyle = shot.color;
     context.stroke();
-    shotI++
+    shot.i++
     if(shot.x > canvas.width + 7){
         shot.x = 0
     }
@@ -198,6 +202,7 @@ function keyPressed(e){
             shot.x = user.x
             shot.y = user.y
             shot.exists = true;
+            shot.i = 1
         }
   }
 }
